@@ -3,13 +3,14 @@
 namespace Database\Seeders;
 
 use App\Models\User;
-use App\Models\Address;
 use App\Models\Product;
 use App\Models\Coupon;
 use App\Models\Blog;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use InvalidArgumentException;
 
 class DatabaseSeeder extends Seeder
 {
@@ -18,45 +19,34 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        if (env('DEMO_SEED_ACCOUNTS', true)) {
-            // 1. Admin User
-            User::firstOrCreate(
-                ['email' => 'admin@lemurra.in'],
+        $adminEmail = config('demo.admin_email');
+        $adminPassword = config('demo.admin_password');
+
+        if (blank($adminEmail) !== blank($adminPassword)) {
+            throw new InvalidArgumentException('Set both DEMO_ADMIN_EMAIL and DEMO_ADMIN_PASSWORD to provision the demo admin.');
+        }
+
+        if (filled($adminEmail)) {
+            $adminEmail = strtolower(trim($adminEmail));
+
+            if (! filter_var($adminEmail, FILTER_VALIDATE_EMAIL)) {
+                throw new InvalidArgumentException('DEMO_ADMIN_EMAIL must be a valid email address.');
+            }
+
+            if (strlen($adminPassword) < 20) {
+                throw new InvalidArgumentException('DEMO_ADMIN_PASSWORD must be at least 20 characters long.');
+            }
+
+            User::updateOrCreate(
+                ['email' => $adminEmail],
                 [
-                    'name' => 'Lemurra Admin',
-                    'password' => Hash::make('lemurra@2026'),
-                    'phone' => '916383408380',
+                    'name' => config('demo.admin_name'),
+                    'password' => Hash::make($adminPassword),
                     'role' => 'admin',
                 ]
             );
-
-            // 2. Demo Customer
-            $demoUser = User::firstOrCreate(
-                ['email' => 'demo@lemurra.in'],
-                [
-                    'name' => 'Demo Customer',
-                    'password' => Hash::make('Demo@1234'),
-                    'phone' => '9876543210',
-                    'role' => 'customer',
-                ]
-            );
-
-            Address::firstOrCreate(
-                [
-                    'user_id' => $demoUser->id,
-                    'line1' => '14 East Coast Road, Thiruvanmiyur'
-                ],
-                [
-                    'name' => 'Demo Customer',
-                    'phone' => '9876543210',
-                    'line2' => 'Near Beach Walkway',
-                    'city' => 'Chennai',
-                    'state' => 'Tamil Nadu',
-                    'pin' => '600041',
-                    'label' => 'Home',
-                    'is_default' => true,
-                ]
-            );
+        } else {
+            Log::info('Skipping demo admin provisioning: DEMO_ADMIN_EMAIL and DEMO_ADMIN_PASSWORD are not configured.');
         }
 
         // Coupons

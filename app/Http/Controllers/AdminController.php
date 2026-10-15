@@ -22,27 +22,8 @@ class AdminController extends Controller
                 ?: $req->input('auth_token')
                 ?: $req->cookie('lem_token');
 
-            $email = strtolower(trim((string) (
-                $req->header('X-Auth-Email')
-                ?: $req->input('auth_email')
-                ?: $req->cookie('lem_email')
-            )));
-
-            $role = (string) (
-                $req->header('X-Auth-Role')
-                ?: $req->input('auth_role')
-                ?: $req->cookie('lem_role')
-            );
-
             if (!empty($token)) {
                 $admin = User::where('remember_token', $token)->first();
-                if ($admin && $admin->isAdmin()) {
-                    Auth::login($admin, true);
-                }
-            }
-
-            if (!Auth::check() && ($role === 'admin' || $email === 'admin@lemurra.in')) {
-                $admin = User::where('email', 'admin@lemurra.in')->first();
                 if ($admin && $admin->isAdmin()) {
                     Auth::login($admin, true);
                 }

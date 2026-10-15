@@ -24,5 +24,3 @@ services:
         value: stderr
       - key: MAIL_MAILER
         value: log
-      - key: DEMO_SEED_ACCOUNTS
-        value: "false"

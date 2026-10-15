@@ -23,15 +23,11 @@ const API = {
   headers(extra = {}) {
     const csrf = (window.APP_CONFIG && window.APP_CONFIG.csrfToken) || "";
     const token = localStorage.getItem("lem.token") || "";
-    const email = (typeof S !== 'undefined' && S.user && S.user.email) ? S.user.email : ((typeof S !== 'undefined' && S.admin) ? "admin@lemurra.in" : "");
-    const role = (typeof S !== 'undefined' && S.admin) ? "admin" : ((typeof S !== 'undefined' && S.user) ? "customer" : "");
     const h = {
       "Accept": "application/json",
       "X-Session-Id": this.sessionId(),
       "X-CSRF-TOKEN": csrf,
       "X-Auth-Token": token,
-      "X-Auth-Email": email,
-      "X-Auth-Role": role,
       ...extra
     };
     if (token) {
@@ -42,18 +38,10 @@ const API = {
   async get(path) {
     try {
       const token = localStorage.getItem("lem.token") || "";
-      const email = (typeof S !== 'undefined' && S.user && S.user.email)
-        ? S.user.email
-        : ((typeof S !== 'undefined' && S.admin)
-          ? "admin@lemurra.in"
-          : (localStorage.getItem("lem_email") || ""));
       let targetUrl = this.url(path);
-      if (email || token) {
+      if (token) {
         const sep = targetUrl.includes("?") ? "&" : "?";
-        const q = [];
-        if (email) q.push("auth_email=" + encodeURIComponent(email));
-        if (token) q.push("auth_token=" + encodeURIComponent(token));
-        targetUrl += sep + q.join("&");
+        targetUrl += sep + "auth_token=" + encodeURIComponent(token);
       }
       const r = await fetch(targetUrl, {
         headers: this.headers(),
@@ -67,13 +55,11 @@ const API = {
   async post(path, data) {
     try {
       const token = localStorage.getItem("lem.token") || "";
-      const email = (typeof S !== 'undefined' && S.user && S.user.email) ? S.user.email : ((typeof S !== 'undefined' && S.admin) ? "admin@lemurra.in" : "");
-      const role = (typeof S !== 'undefined' && S.admin) ? "admin" : ((typeof S !== 'undefined' && S.user) ? "customer" : "");
       const r = await fetch(this.url(path), {
         method: "POST",
         headers: this.headers({ "Content-Type": "application/json" }),
         credentials: "same-origin",
-        body: JSON.stringify({ auth_token: token, auth_email: email, auth_role: role, ...(data || {}) })
+        body: JSON.stringify({ auth_token: token, ...(data || {}) })
       });
       return await r.json();
     } catch (e) {
@@ -83,13 +69,11 @@ const API = {
   async patch(path, data) {
     try {
       const token = localStorage.getItem("lem.token") || "";
-      const email = (typeof S !== 'undefined' && S.user && S.user.email) ? S.user.email : ((typeof S !== 'undefined' && S.admin) ? "admin@lemurra.in" : "");
-      const role = (typeof S !== 'undefined' && S.admin) ? "admin" : ((typeof S !== 'undefined' && S.user) ? "customer" : "");
       const r = await fetch(this.url(path), {
         method: "PATCH",
         headers: this.headers({ "Content-Type": "application/json" }),
         credentials: "same-origin",
-        body: JSON.stringify({ auth_token: token, auth_email: email, auth_role: role, ...(data || {}) })
+        body: JSON.stringify({ auth_token: token, ...(data || {}) })
       });
       return await r.json();
     } catch (e) {
@@ -897,17 +881,6 @@ const CATS = [
 
 const WA =
   "916383408380"; /* support line only — orders are placed on the site */
-const ADMIN = { user: "admin@lemurra.in", pass: "lemurra@2026" };
-/* DEMO CUSTOMER LOGIN — lets you and your visitors try the customer side straight away.
-   When real customers start using the site, set enabled:false (or delete this line and the DEMO uses below).
-   The demo account is only created if enabled, and is never overwritten if it already exists. */
-const DEMO = {
-  enabled: true,
-  email: "demo@lemurra.in",
-  pass: "Demo@1234",
-  name: "Demo Customer",
-  phone: "9876543210",
-};
 const STATUS = [
   "Order Confirmed",
   "Packed",
@@ -1015,33 +988,6 @@ const S = {
   note: "",
 };
 if (!Array.isArray(DB.read("products", null))) DB.write("products", S.products);
-(function seedDemo() {
-  if (!DEMO.enabled) return;
-  const a = DB.read("accounts", {});
-  if (a[DEMO.email]) return;
-  a[DEMO.email] = {
-    name: DEMO.name,
-    pass: DEMO.pass,
-    phone: DEMO.phone,
-    joined: Date.now(),
-    demo: true,
-    wish: [],
-    addresses: [
-      {
-        id: "a1",
-        name: DEMO.name,
-        phone: DEMO.phone,
-        pin: "600054",
-        line: "12, Temple Street, Avadi",
-        landmark: "Near the bus stand",
-        city: "Chennai",
-        state: "Tamil Nadu",
-        type: "Home",
-      },
-    ],
-  };
-  DB.write("accounts", a);
-})();
 /* v3: three listings carried the wrong photograph in earlier builds — replace them with the corrected records */
 (function migrate() {
   if (DB.read("ver", 1) >= 3) return;
@@ -4085,11 +4031,6 @@ function authFormHTML(ctx) {
       <div class="rowsplit"><label class="chk"><input type="checkbox" id="lRemember" checked> Stay signed in</label>
         <a class="lnk" onclick="forgot()" tabindex="0">Forgot password?</a></div>
       <button class="btn btn-p btn-lg btn-block" onclick="doLogin()">Sign in</button>
-      ${DEMO.disabled
-        ? `<div class="demo-box"><div><b>Try the demo account</b><small>Username <code>${esc(DEMO.email)}</code><br>Password <code>${esc(DEMO.pass)}</code></small></div>
-        <button class="btn btn-o btn-sm" type="button" onclick="demoLogin()">Use demo login</button></div>`
-        : ""
-      }
       <p class="auth-alt">New to Lemurra? <a class="lnk" onclick="authTab='reg';render()" tabindex="0">Create an account</a></p>
     `
       : `
@@ -4127,11 +4068,6 @@ function goAccount() {
   if (currentRoute() === "account") render();
   else go("account");
 }
-function demoLogin() {
-  $("#lEmail").value = DEMO.email;
-  $("#lPass").value = DEMO.pass;
-  doLogin();
-}
 function doLogin() {
   const em = $("#lEmail").value.trim(),
     lem = em.toLowerCase(),
@@ -4142,7 +4078,11 @@ function doLogin() {
   }
 
   // Attempt authentication via Laravel backend
-  API.post("/auth/login", { email: em || (pw === ADMIN.pass ? "admin@lemurra.in" : ""), password: pw })
+  if (!em) {
+    return setErr("eLEmail", "Enter your email address.");
+  }
+
+  API.post("/auth/login", { email: em, password: pw })
     .then(res => {
       if (res && res.success) {
         S.user = res.user;
@@ -4519,7 +4459,7 @@ function vAdmin() {
   const show = (k) => (t === k ? "" : "hidden");
   return `<div class="wrap">
   <div class="adm-h">
-    <div><h1>Admin panel</h1><p>Signed in as <b>${esc(ADMIN.user)}</b></p></div>
+    <div><h1>Admin panel</h1><p>Signed in as <b>${esc((S.user && S.user.email) || "")}</b></p></div>
     <div class="adm-act"><a class="btn btn-o btn-sm" href="#/">View shop</a><button class="btn btn-p btn-sm" onclick="editProduct(null)">${ic("plus")}Add product</button><button class="btn btn-o btn-sm" onclick="adminOut()">${ic("logout")}Sign out</button></div>
   </div>
   <div class="atabs" id="atabs" role="tablist"><i class="atab-i"></i>${tabs.map(([k, l]) => `<button role="tab" data-k="${k}" class="${t === k ? "on" : ""}" onclick="admTab('${k}')">${l}</button>`).join("")}</div>

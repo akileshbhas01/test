@@ -13,9 +13,11 @@ The Render Blueprint and Dockerfile run this Laravel app with SQLite on Render's
 
 1. Open the [Render service](https://lemurra-traders-demo.onrender.com). The service is configured by the [Render Blueprint](https://dashboard.render.com/blueprint/exs-db88dvlg1s2s739efcgg).
 2. Review the plan before confirming. Do not add a paid database, disk, or upgrade if you want to keep this deployment at $0.
-3. Render generates `APP_KEY`, builds the Docker image, runs migrations and the demo catalog seeder, then provides a public `onrender.com` URL.
+3. The startup script generates a valid Laravel encryption key if one isn't configured, builds the app, runs migrations and the demo catalog seeder, then provides a public `onrender.com` URL.
 
-The public demo does not seed the bundled admin/customer accounts (`DEMO_SEED_ACCOUNTS=false`). Do not import the local SQL dump: it contains customer and order records. Demo catalog data comes from `database/seeds_data.json`. Railway hosting may require paid usage and is not configured as the no-cost option here.
+To enable an admin login, add `DEMO_ADMIN_EMAIL` and `DEMO_ADMIN_PASSWORD` as private environment variables in the Render service settings. The password must be at least 20 characters. An optional `DEMO_ADMIN_NAME` sets the display name. The startup seeder hashes the password and provisions that account; if either required variable is missing, it skips admin creation. Sign in from the site's Account page using the configured email and password. Never put the password in Git or send it in chat. Changing the password variable changes the account password at the next service restart/deploy. The old bundled admin password and demo-account credentials have been removed from the public app.
+
+The public demo does not seed any bundled customer accounts. Do not import the local SQL dump: it contains customer and order records. Demo catalog data comes from `database/seeds_data.json`. Railway hosting may require paid usage and is not configured as the no-cost option here.
 
 ## About Laravel
 

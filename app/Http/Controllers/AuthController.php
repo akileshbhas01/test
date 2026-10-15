@@ -79,11 +79,6 @@ class AuthController extends Controller
         // Try to authenticate by email
         $user = User::where('email', $email)->first();
 
-        // Also allow admin to login via username if provided as "admin"
-        if (!$user && $email === 'admin') {
-            $user = User::where('email', 'admin@lemurra.in')->first();
-        }
-
         if (!$user || !Hash::check($password, $user->password)) {
             return response()->json([
                 'success' => false,
