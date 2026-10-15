@@ -7,6 +7,17 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## Deploying a demo on Railway
+
+This repository includes a Railway configuration that builds the Laravel app with Nixpacks, serves it on Railway's assigned port, and uses Laravel's `/up` health endpoint.
+
+1. Create a Railway project from this GitHub repository and add a MySQL service.
+2. In the app service variables, set `APP_ENV=production`, `APP_DEBUG=false`, `APP_KEY` to a newly generated key, and `APP_URL` to the Railway public URL. Set `DB_CONNECTION=mysql`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, and `DB_PASSWORD` from the Railway MySQL service's connection variables.
+3. Deploy, then run `php artisan migrate --force` in the app service to create the schema. If you need existing records from a database dump, import that separately into the MySQL service instead of blindly importing it on top of a fresh migration.
+4. Configure any required mail and payment-provider secrets as Railway variables. Never commit `.env` or a database dump.
+
+Generate a production key with `php artisan key:generate --show`; copy the result into Railway's `APP_KEY` variable. Railway may require a paid plan or usage credits; check its current pricing before deploying.
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
