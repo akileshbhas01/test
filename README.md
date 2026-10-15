@@ -11,7 +11,7 @@
 
 The Render Blueprint and Dockerfile run this Laravel app with SQLite on Render's free web-service plan. It does not provision a paid database. Free instances can sleep when idle, and their local filesystem is ephemeral, so user/order data can disappear after a restart or redeploy. This setup is for a demo, not production or persistent customer data.
 
-1. Open the [Render Blueprint deploy page](https://render.com/deploy?repo=https://github.com/akileshbhas01/test) and create the service from this repository.
+1. Open the [Render service](https://lemurra-traders-demo.onrender.com). The service is configured by the [Render Blueprint](https://dashboard.render.com/blueprint/exs-db88dvlg1s2s739efcgg).
 2. Review the plan before confirming. Do not add a paid database, disk, or upgrade if you want to keep this deployment at $0.
 3. Render generates `APP_KEY`, builds the Docker image, runs migrations and the demo catalog seeder, then provides a public `onrender.com` URL.
 
