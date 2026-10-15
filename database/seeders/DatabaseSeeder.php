@@ -18,47 +18,48 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // 1. Admin User
-        $admin = User::firstOrCreate(
-            ['email' => 'admin@lemurra.in'],
-            [
-                'name' => 'Lemurra Admin',
-                'password' => Hash::make('lemurra@2026'),
-                'phone' => '916383408380',
-                'role' => 'admin',
-            ]
-        );
+        if (env('DEMO_SEED_ACCOUNTS', true)) {
+            // 1. Admin User
+            User::firstOrCreate(
+                ['email' => 'admin@lemurra.in'],
+                [
+                    'name' => 'Lemurra Admin',
+                    'password' => Hash::make('lemurra@2026'),
+                    'phone' => '916383408380',
+                    'role' => 'admin',
+                ]
+            );
 
-        // 2. Demo Customer
-        $demoUser = User::firstOrCreate(
-            ['email' => 'demo@lemurra.in'],
-            [
-                'name' => 'Demo Customer',
-                'password' => Hash::make('Demo@1234'),
-                'phone' => '9876543210',
-                'role' => 'customer',
-            ]
-        );
+            // 2. Demo Customer
+            $demoUser = User::firstOrCreate(
+                ['email' => 'demo@lemurra.in'],
+                [
+                    'name' => 'Demo Customer',
+                    'password' => Hash::make('Demo@1234'),
+                    'phone' => '9876543210',
+                    'role' => 'customer',
+                ]
+            );
 
-        // Default address for Demo Customer
-        Address::firstOrCreate(
-            [
-                'user_id' => $demoUser->id,
-                'line1' => '14 East Coast Road, Thiruvanmiyur'
-            ],
-            [
-                'name' => 'Demo Customer',
-                'phone' => '9876543210',
-                'line2' => 'Near Beach Walkway',
-                'city' => 'Chennai',
-                'state' => 'Tamil Nadu',
-                'pin' => '600041',
-                'label' => 'Home',
-                'is_default' => true,
-            ]
-        );
+            Address::firstOrCreate(
+                [
+                    'user_id' => $demoUser->id,
+                    'line1' => '14 East Coast Road, Thiruvanmiyur'
+                ],
+                [
+                    'name' => 'Demo Customer',
+                    'phone' => '9876543210',
+                    'line2' => 'Near Beach Walkway',
+                    'city' => 'Chennai',
+                    'state' => 'Tamil Nadu',
+                    'pin' => '600041',
+                    'label' => 'Home',
+                    'is_default' => true,
+                ]
+            );
+        }
 
-        // 3. Coupons
+        // Coupons
         $coupons = [
             [
                 'code' => 'WELCOME10',

@@ -7,16 +7,15 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## Deploying a demo on Railway
+## Deploying a no-cost demo on Render
 
-This repository includes a Railway configuration that builds the Laravel app with Nixpacks, serves it on Railway's assigned port, and uses Laravel's `/up` health endpoint.
+The Render Blueprint and Dockerfile run this Laravel app with SQLite on Render's free web-service plan. It does not provision a paid database. Free instances can sleep when idle, and their local filesystem is ephemeral, so user/order data can disappear after a restart or redeploy. This setup is for a demo, not production or persistent customer data.
 
-1. Create a Railway project from this GitHub repository and add a MySQL service.
-2. In the app service variables, set `APP_ENV=production`, `APP_DEBUG=false`, `APP_KEY` to a newly generated key, and `APP_URL` to the Railway public URL. Set `DB_CONNECTION=mysql`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, and `DB_PASSWORD` from the Railway MySQL service's connection variables.
-3. Deploy, then run `php artisan migrate --force` in the app service to create the schema. If you need existing records from a database dump, import that separately into the MySQL service instead of blindly importing it on top of a fresh migration.
-4. Configure any required mail and payment-provider secrets as Railway variables. Never commit `.env` or a database dump.
+1. Open the [Render Blueprint deploy page](https://render.com/deploy?repo=https://github.com/akileshbhas01/test) and create the service from this repository.
+2. Review the plan before confirming. Do not add a paid database, disk, or upgrade if you want to keep this deployment at $0.
+3. Render generates `APP_KEY`, builds the Docker image, runs migrations and the demo catalog seeder, then provides a public `onrender.com` URL.
 
-Generate a production key with `php artisan key:generate --show`; copy the result into Railway's `APP_KEY` variable. Railway may require a paid plan or usage credits; check its current pricing before deploying.
+The public demo does not seed the bundled admin/customer accounts (`DEMO_SEED_ACCOUNTS=false`). Do not import the local SQL dump: it contains customer and order records. Demo catalog data comes from `database/seeds_data.json`. Railway hosting may require paid usage and is not configured as the no-cost option here.
 
 ## About Laravel
 
