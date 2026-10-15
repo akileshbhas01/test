@@ -17,13 +17,27 @@ The Render Blueprint and Dockerfile run this Laravel app with SQLite on Render's
 
 To enable an admin login, add `DEMO_ADMIN_EMAIL` and `DEMO_ADMIN_PASSWORD` as private environment variables in the Render service settings. The password must be at least 20 characters. An optional `DEMO_ADMIN_NAME` sets the display name. The startup seeder hashes the password and provisions that account; if either required variable is missing, it skips admin creation. Sign in from the site's Account page using the configured email and password. Never put the password in Git or send it in chat. Changing the password variable changes the account password at the next service restart/deploy. The old bundled admin password and demo-account credentials have been removed from the public app.
 
-The public demo does not seed any bundled customer accounts. Do not import the local SQL dump: it contains customer and order records. Demo catalog data comes from `database/seeds_data.json`. Railway hosting may require paid usage and is not configured as the no-cost option here.
+The public demo does not seed any bundled customer accounts. Do not import the local SQL dump: it contains customer and order records. Demo catalog data comes from `database/seeds_data.json`.
+
+## Preparing Railway production with PostgreSQL
+
+`railway.json` and `Dockerfile.railway` prepare a PHP/Apache deployment with PostgreSQL support. The Railway startup script requires a stable `APP_KEY`, `DB_CONNECTION=pgsql`, a `DB_URL` reference to the Railway PostgreSQL service, and a public domain. It runs migrations and serves the app with Apache; it does not create Railway services or set credentials.
+
+After creating and funding Railway services yourself:
+
+1. Create a PostgreSQL service and a web service from this repository. Set the web service's `DB_CONNECTION` to `pgsql` and `DB_URL` to a Railway reference such as `${{Postgres.DATABASE_URL}}` (use your actual PostgreSQL service name).
+2. Add `APP_ENV=production`, `APP_DEBUG=false`, `APP_KEY`, `APP_URL`, `SESSION_DRIVER=database`, `CACHE_STORE=database`, `QUEUE_CONNECTION=sync`, and `LOG_CHANNEL=stderr` to the web service. Generate an application key with `php artisan key:generate --show` and set it directly in Railway; never commit or share it.
+3. Add `DEMO_ADMIN_EMAIL` and `DEMO_ADMIN_PASSWORD` (at least 20 characters) before initial seeding. Set Zoho SMTP variables and the active Razorpay variables described below directly in Railway's private Variables panel.
+4. After the first successful deployment/migrations, run `php artisan db:seed --force` once from the web service shell to add the catalog, coupons, and configured admin. Do not rerun the seeder on an existing store: product seeding restores the initial stock values.
+5. Generate a Railway public domain and set `APP_URL` to its HTTPS URL. Configure Razorpay automatic capture before accepting live payments.
+
+This repository contains deployment configuration only. The Railway services, PostgreSQL database, domain, secrets, and any billing were not created or changed.
 
 ### Payments and order email
 
-The Render Blueprint configures Zoho SMTP (`smtp.zoho.in`, SSL on port 465). Set `MAIL_PASSWORD` to the Zoho app password in the Render service's Environment settings; do not put credentials in Git or chat. Alternatively, use port 587 with `MAIL_ENCRYPTION=tls` if required by the mail provider.
+The Render Blueprint and the Railway instructions configure Zoho SMTP (`smtp.zoho.in`, SSL on port 465). Set `MAIL_MAILER=smtp`, `MAIL_HOST=smtp.zoho.in`, `MAIL_PORT=465`, `MAIL_ENCRYPTION=ssl`, `MAIL_USERNAME=admin@lemurra.in`, `MAIL_FROM_ADDRESS=admin@lemurra.in`, `MAIL_FROM_NAME="Lemurra Traders"`, and `ORDER_NOTIFICATION_EMAIL=admin@lemurra.in`. Set the rotated Zoho app password as `MAIL_PASSWORD` directly in the hosting provider's private environment settings; never put credentials in Git or chat. Alternatively use port 587 with `MAIL_ENCRYPTION=tls` if required by the provider.
 
-Set `RAZORPAY_KEY` and `RAZORPAY_SECRET` in Render Environment settings using an active Razorpay key pair. The key ID is exposed to the browser for Checkout; the secret must remain server-side. Payment verification requires a valid signature and a Razorpay payment marked captured with the matching INR amount and order ID. Configure automatic capture in the Razorpay dashboard. Missing or invalid gateway configuration fails payment rather than simulating success. After changing credentials, redeploy/restart the service so Laravel reloads its configuration.
+Set `RAZORPAY_KEY` and `RAZORPAY_SECRET` using an active Razorpay key pair in the hosting provider's private environment settings. The key ID is exposed to the browser for Checkout; the secret must remain server-side. Payment verification requires a valid signature and a Razorpay payment marked captured with the matching INR amount and order ID. Missing or invalid gateway configuration fails payment rather than simulating success. After changing credentials, redeploy/restart the service so Laravel reloads its configuration.
 
 ## About Laravel
 
