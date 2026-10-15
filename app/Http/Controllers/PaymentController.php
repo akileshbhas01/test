@@ -2,106 +2,201 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CartItem;
 use App\Models\Order;
 use App\Models\Product;
-use App\Models\CartItem;
+use App\Support\OrderEmailNotifier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class PaymentController extends Controller
 {
     public function createRazorpayOrder(Request $request)
     {
-        $amount = (float) $request->input('amount', 0);
-        $orderNumber = $request->input('order_number', 'ORD-' . strtoupper(uniqid()));
-        $key = env('RAZORPAY_KEY', 'rzp_test_nHZf320qihdDBv');
-        $secret = env('RAZORPAY_SECRET', '');
+        $validated = $request->validate([
+            'amount' => ['required', 'numeric', 'min:1'],
+            'order_number' => ['nullable', 'string', 'max:40'],
+        ]);
 
-        $amountInPaise = (int) round($amount * 100);
+        $key = config('services.razorpay.key');
+        $secret = config('services.razorpay.secret');
 
-        if (!empty($key) && !empty($secret)) {
-            try {
-                $response = Http::withBasicAuth($key, $secret)
-                    ->post('https://api.razorpay.com/v1/orders', [
-                        'amount' => $amountInPaise,
-                        'currency' => 'INR',
-                        'receipt' => (string) $orderNumber,
-                        'payment_capture' => 1,
-                    ]);
-
-                if ($response->successful()) {
-                    $razorpayOrder = $response->json();
-                    return response()->json([
-                        'success' => true,
-                        'razorpay_order_id' => $razorpayOrder['id'],
-                        'amount' => $amountInPaise,
-                        'currency' => 'INR',
-                        'key' => $key,
-                    ]);
-                }
-            } catch (\Exception $e) {
-                Log::warning('Razorpay Order API error: ' . $e->getMessage());
-            }
+        if (!$key || !$secret) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Online payment is temporarily unavailable. Please contact support.',
+            ], 503);
         }
 
-        // Test fallback order ID for test key
+        $amountInPaise = (int) round((float) $validated['amount'] * 100);
+
+        try {
+            $response = Http::connectTimeout(5)
+                ->timeout(15)
+                ->withBasicAuth($key, $secret)
+                ->post('https://api.razorpay.com/v1/orders', [
+                    'amount' => $amountInPaise,
+                    'currency' => 'INR',
+                    'receipt' => $validated['order_number'] ?? 'LT-' . Str::upper(Str::random(12)),
+                ]);
+        } catch (\Throwable $exception) {
+            Log::error('Razorpay order creation request failed.', [
+                'exception' => $exception::class,
+                'message' => $exception->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Could not start payment. Please try again.',
+            ], 502);
+        }
+
+        if (!$response->successful() || !is_string($response->json('id'))) {
+            Log::error('Razorpay rejected the order creation request.', [
+                'http_status' => $response->status(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Could not start payment. Please try again or contact support.',
+            ], 502);
+        }
+
         return response()->json([
             'success' => true,
-            'razorpay_order_id' => 'order_test_' . substr(md5(uniqid()), 0, 14),
+            'razorpay_order_id' => $response->json('id'),
             'amount' => $amountInPaise,
             'currency' => 'INR',
             'key' => $key,
         ]);
     }
 
-    public function verifyPayment(Request $request)
+    public function verifyPayment(Request $request, OrderEmailNotifier $emailNotifier)
     {
-        $orderNumber = $request->input('order_number');
-        $paymentId = $request->input('razorpay_payment_id');
-        $razorpayOrderId = $request->input('razorpay_order_id');
-        $signature = $request->input('razorpay_signature');
+        $validated = $request->validate([
+            'order_number' => ['required', 'string', 'max:40'],
+            'razorpay_payment_id' => ['required', 'string', 'max:255'],
+            'razorpay_order_id' => ['required', 'string', 'max:255'],
+            'razorpay_signature' => ['required', 'string', 'max:255'],
+        ]);
 
-        $order = Order::where('order_number', $orderNumber)->first();
+        $order = Order::where('order_number', $validated['order_number'])->first();
         if (!$order) {
             return response()->json(['success' => false, 'message' => 'Order not found.'], 404);
         }
 
-        $secret = env('RAZORPAY_SECRET', '');
-        $verified = true;
-
-        if (!empty($secret) && !empty($signature) && !empty($razorpayOrderId)) {
-            $generatedSignature = hash_hmac('sha256', $razorpayOrderId . '|' . $paymentId, $secret);
-            if ($generatedSignature !== $signature) {
-                $verified = false;
-            }
+        if ($order->payment_status === 'Paid') {
+            return response()->json([
+                'success' => true,
+                'message' => 'Payment was already verified.',
+                'order' => $order->load('items'),
+            ]);
         }
 
-        if (!$verified) {
-            $order->update([
-                'payment_status' => 'Failed',
+        $key = config('services.razorpay.key');
+        $secret = config('services.razorpay.secret');
+        if (!$key || !$secret) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Payment verification is temporarily unavailable. Contact support before retrying payment.',
+            ], 503);
+        }
+
+        if (
+            !$order->razorpay_order_id
+            || !hash_equals((string) $order->razorpay_order_id, $validated['razorpay_order_id'])
+        ) {
+            return response()->json(['success' => false, 'message' => 'Payment order does not match this order.'], 400);
+        }
+
+        $expectedSignature = hash_hmac(
+            'sha256',
+            $validated['razorpay_order_id'] . '|' . $validated['razorpay_payment_id'],
+            $secret,
+        );
+
+        if (!hash_equals($expectedSignature, $validated['razorpay_signature'])) {
+            return response()->json(['success' => false, 'message' => 'Payment signature verification failed.'], 400);
+        }
+
+        try {
+            $paymentResponse = Http::connectTimeout(5)
+                ->timeout(15)
+                ->withBasicAuth($key, $secret)
+                ->get('https://api.razorpay.com/v1/payments/' . rawurlencode($validated['razorpay_payment_id']));
+        } catch (\Throwable $exception) {
+            Log::error('Razorpay payment verification request failed.', [
+                'order_number' => $order->order_number,
+                'exception' => $exception::class,
+                'message' => $exception->getMessage(),
             ]);
-            return response()->json(['success' => false, 'message' => 'Payment verification failed.'], 400);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Could not verify payment right now. Please contact support before retrying.',
+            ], 502);
+        }
+
+        if (!$paymentResponse->successful()) {
+            Log::error('Razorpay could not confirm the payment.', [
+                'order_number' => $order->order_number,
+                'http_status' => $paymentResponse->status(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Could not verify payment right now. Please contact support before retrying.',
+            ], 502);
+        }
+
+        $payment = $paymentResponse->json();
+        if (!is_array($payment)) {
+            Log::error('Razorpay returned an invalid payment response.', [
+                'order_number' => $order->order_number,
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Could not verify payment right now. Please contact support before retrying.',
+            ], 502);
+        }
+
+        $expectedAmount = (int) round((float) $order->total * 100);
+        if (
+            ($payment['status'] ?? null) !== 'captured'
+            || ($payment['currency'] ?? null) !== 'INR'
+            || (int) ($payment['amount'] ?? 0) !== $expectedAmount
+            || ($payment['order_id'] ?? null) !== $order->razorpay_order_id
+            || ($payment['id'] ?? null) !== $validated['razorpay_payment_id']
+        ) {
+            Log::warning('Razorpay payment details did not match the order.', [
+                'order_number' => $order->order_number,
+                'payment_status' => $payment['status'] ?? null,
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'message' => 'Payment is not captured for the correct order amount. Contact support if money was debited.',
+            ], 400);
         }
 
         $order->update([
             'payment_status' => 'Paid',
-            'payment_ref' => $paymentId,
-            'razorpay_order_id' => $razorpayOrderId,
-            'razorpay_payment_id' => $paymentId,
+            'payment_ref' => $validated['razorpay_payment_id'],
+            'razorpay_payment_id' => $validated['razorpay_payment_id'],
             'status' => 'Order Confirmed',
         ]);
 
-        // Decrement stock for purchased products
         foreach ($order->items as $item) {
-            $prod = Product::find($item->product_id);
-            if ($prod) {
-                $prod->decrement('stock', min($prod->stock, $item->qty));
+            $product = Product::find($item->product_id);
+            if ($product) {
+                $product->decrement('stock', min($product->stock, $item->qty));
             }
         }
 
-        // Clear user/session cart
         $userId = Auth::id() ?: $order->user_id;
         $sessionId = $request->header('X-Session-Id') ?: $request->session()->getId();
         if ($userId) {
@@ -110,36 +205,11 @@ class PaymentController extends Controller
             CartItem::where('session_id', $sessionId)->delete();
         }
 
-        // Send separate emails for Customer (Thank you) and Admin (New Order Alert)
-        try {
-            $order->load('items');
-            $customerEmail = !empty($order->customer_email) ? trim($order->customer_email) : null;
-            if (!empty($customerEmail)) {
-                \Illuminate\Support\Facades\Mail::to($customerEmail)
-                    ->send(new \App\Mail\OrderConfirmationMail($order));
-                Log::info("Customer confirmation email sent for #{$order->order_number} to {$customerEmail}");
-            }
-
-            // Dedicated Admin notification email
-            $adminEmails = array_values(array_unique(array_filter([
-                'lemurratraders@gmail.com',
-                'admin@lemurra.in',
-                env('MAIL_FROM_ADDRESS', 'ezhil.sujee@gmail.com')
-            ])));
-
-            if (!empty($adminEmails)) {
-                \Illuminate\Support\Facades\Mail::to($adminEmails[0])
-                    ->cc(array_slice($adminEmails, 1))
-                    ->send(new \App\Mail\AdminOrderNotificationMail($order));
-                Log::info("Admin new order notification email sent for #{$order->order_number}");
-            }
-        } catch (\Exception $e) {
-            Log::error('Order email sending failed: ' . $e->getMessage());
-        }
+        $emailNotifier->send($order);
 
         return response()->json([
             'success' => true,
-            'message' => 'Payment verified successfully',
+            'message' => 'Payment verified successfully.',
             'order' => $order->load('items'),
         ]);
     }

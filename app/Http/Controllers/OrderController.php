@@ -8,18 +8,20 @@ use App\Models\Product;
 use App\Models\Coupon;
 use App\Models\CartItem;
 use App\Models\User;
+use App\Support\OrderEmailNotifier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class OrderController extends Controller
 {
-    public function create(Request $request)
+    public function create(Request $request, OrderEmailNotifier $emailNotifier)
     {
         $request->validate([
             'items' => 'required|array|min:1',
             'shipping_address' => 'required|array',
-            'payment_method' => 'required|string',
+            'payment_method' => 'required|in:cod,razorpay',
+            'razorpay_order_id' => 'required_if:payment_method,razorpay|nullable|string|max:255',
         ]);
 
         $rawItems = $request->input('items', []);
@@ -139,7 +141,8 @@ class OrderController extends Controller
             'free_gift' => $freeGift,
             'payment_method' => $method,
             'payment_status' => $method === 'cod' ? 'Pay on delivery' : 'Pending',
-            'status' => 'Order Confirmed',
+            'razorpay_order_id' => $method === 'razorpay' ? $request->input('razorpay_order_id') : null,
+            'status' => $method === 'cod' ? 'Order Confirmed' : 'Payment Pending',
             'note' => $note,
         ]);
 
@@ -163,29 +166,7 @@ class OrderController extends Controller
                 CartItem::where('session_id', $sessionId)->delete();
             }
 
-            // Send separate emails for Customer and Admin on COD orders
-            try {
-                $order->load('items');
-                $customerEmail = !empty($order->customer_email) ? trim($order->customer_email) : null;
-                if (!empty($customerEmail)) {
-                    \Illuminate\Support\Facades\Mail::to($customerEmail)
-                        ->send(new \App\Mail\OrderConfirmationMail($order));
-                }
-
-                $adminEmails = array_values(array_unique(array_filter([
-                    'lemurratraders@gmail.com',
-                    'admin@lemurra.in',
-                    env('MAIL_FROM_ADDRESS', 'ezhil.sujee@gmail.com')
-                ])));
-
-                if (!empty($adminEmails)) {
-                    \Illuminate\Support\Facades\Mail::to($adminEmails[0])
-                        ->cc(array_slice($adminEmails, 1))
-                        ->send(new \App\Mail\AdminOrderNotificationMail($order));
-                }
-            } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error('COD Order email sending failed: ' . $e->getMessage());
-            }
+            $emailNotifier->send($order);
         }
 
         return response()->json([

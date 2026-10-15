@@ -19,6 +19,12 @@ To enable an admin login, add `DEMO_ADMIN_EMAIL` and `DEMO_ADMIN_PASSWORD` as pr
 
 The public demo does not seed any bundled customer accounts. Do not import the local SQL dump: it contains customer and order records. Demo catalog data comes from `database/seeds_data.json`. Railway hosting may require paid usage and is not configured as the no-cost option here.
 
+### Payments and order email
+
+The Render Blueprint configures Zoho SMTP (`smtp.zoho.in`, SSL on port 465). Set `MAIL_PASSWORD` to the Zoho app password in the Render service's Environment settings; do not put credentials in Git or chat. Alternatively, use port 587 with `MAIL_ENCRYPTION=tls` if required by the mail provider.
+
+Set `RAZORPAY_KEY` and `RAZORPAY_SECRET` in Render Environment settings using an active Razorpay key pair. The key ID is exposed to the browser for Checkout; the secret must remain server-side. Payment verification requires a valid signature and a Razorpay payment marked captured with the matching INR amount and order ID. Configure automatic capture in the Razorpay dashboard. Missing or invalid gateway configuration fails payment rather than simulating success. After changing credentials, redeploy/restart the service so Laravel reloads its configuration.
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:

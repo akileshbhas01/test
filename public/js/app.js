@@ -3346,15 +3346,14 @@ function paymentStep(P) {
       <span style="font-size:18px;margin-top:2px;">${ic("shield")}</span>
       <div>
         <b style="display:block;margin-bottom:2px;">100% Secure Razorpay Payment Gateway</b>
-        <span>Pay with UPI (Google Pay, PhonePe, Paytm), Debit/Credit Cards (Visa, Mastercard, RuPay), Netbanking & Wallets. Instant order confirmation & tax invoice sent to your email.</span>
+        <span>Pay with UPI (Google Pay, PhonePe, Paytm), debit and credit cards, netbanking, or wallets. We’ll email your order confirmation after payment.</span>
       </div>
     </div>
     <div class="form-act"><button class="btn btn-glow btn-lg" id="payBtn" onclick="payNow()">Pay ${inr(P.total)} with Razorpay</button></div>`;
 }
-/* Wire a real gateway here (Razorpay, Cashfree, PayU). Resolve with {method, status:"Paid", ref} on success. */
+/* Open Razorpay Checkout and return its signed payment response. */
 function startPayment(method, amount) {
   return new Promise((resolve, reject) => {
-    const rzpKey = (window.APP_CONFIG && window.APP_CONFIG.razorpayKey) || "rzp_test_nHZf320qihdDBv";
     const u = S.user || {};
     const a = (u.addresses || []).find((x) => String(x.id) === String(S.co.addr)) || {};
 
@@ -3362,80 +3361,57 @@ function startPayment(method, amount) {
       amount: amount,
       order_number: "LT-" + Date.now().toString(36).toUpperCase()
     }).then(rzpData => {
-      const orderId = (rzpData && rzpData.razorpay_order_id && !rzpData.razorpay_order_id.startsWith("order_test_"))
-        ? rzpData.razorpay_order_id
-        : undefined;
-
-      if (typeof Razorpay !== "undefined") {
-        const options = {
-          key: rzpKey,
-          amount: Math.round(amount * 100),
-          currency: "INR",
-          name: "Lemurra Traders",
-          description: "Payment for order",
-          image: IMG.brand || "images/brand.webp",
-          order_id: orderId,
-          handler: function (response) {
-            resolve({
-              method: "razorpay",
-              status: "Paid",
-              ref: response.razorpay_payment_id || ("RZP_" + Date.now().toString(36).toUpperCase()),
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_order_id: response.razorpay_order_id || (rzpData && rzpData.razorpay_order_id),
-              razorpay_signature: response.razorpay_signature || ""
-            });
-          },
-          prefill: {
-            name: a.name || u.name || "",
-            email: u.email || "",
-            contact: a.phone || u.phone || ""
-          },
-          theme: {
-            color: "#0C4A32"
-          },
-          modal: {
-            ondismiss: function () {
-              reject(new Error("Payment cancelled."));
-            }
-          }
-        };
-
-        try {
-          const rzp = new Razorpay(options);
-          rzp.on("payment.failed", function (resp) {
-            reject(new Error(resp.error && resp.error.description ? resp.error.description : "Payment failed."));
-          });
-          rzp.open();
-          return;
-        } catch (e) {
-          console.warn("Razorpay open error:", e);
-        }
+      if (!rzpData || !rzpData.success || !rzpData.razorpay_order_id || !rzpData.key) {
+        reject(new Error((rzpData && rzpData.message) || "Online payment is unavailable. Please try again later."));
+        return;
+      }
+      if (typeof Razorpay === "undefined") {
+        reject(new Error("The secure payment window could not load. Check your connection and try again."));
+        return;
       }
 
-      modal(
-        "Razorpay Test Payment",
-        `<div class="pay-demo"><span class="pay-amt num">${inr(amount)}</span><p><b>Razorpay Gateway · Test Key: ${rzpKey}</b></p>
-          <p class="m-note">Testing mode active. Click below to complete test payment with Razorpay.</p></div>`,
-        `<button class="btn btn-o" id="payFail">Cancel</button><button class="btn btn-glow" id="payOk">Complete Test Payment ${inr(amount)}</button>`,
-      );
-      $("#payOk").onclick = () => {
-        $("#payOk").disabled = true;
-        $("#payOk").textContent = "Processing…";
-        setTimeout(() => {
-          closeModal();
+      const options = {
+        key: rzpData.key,
+        amount: rzpData.amount,
+        currency: rzpData.currency || "INR",
+        name: "Lemurra Traders",
+        description: "Payment for order",
+        image: IMG.brand || "images/brand.webp",
+        order_id: rzpData.razorpay_order_id,
+        handler: function (response) {
           resolve({
             method: "razorpay",
             status: "Paid",
-            ref: "RZP_TEST_" + Date.now().toString(36).toUpperCase(),
-            razorpay_payment_id: "pay_test_" + Date.now().toString(36),
-            razorpay_order_id: rzpData ? rzpData.razorpay_order_id : null,
+            ref: response.razorpay_payment_id,
+            razorpay_payment_id: response.razorpay_payment_id,
+            razorpay_order_id: response.razorpay_order_id,
+            razorpay_signature: response.razorpay_signature
           });
-        }, 800);
+        },
+        prefill: {
+          name: a.name || u.name || "",
+          email: u.email || a.email || "",
+          contact: a.phone || u.phone || ""
+        },
+        theme: {
+          color: "#0C4A32"
+        },
+        modal: {
+          ondismiss: function () {
+            reject(new Error("Payment cancelled."));
+          }
+        }
       };
-      $("#payFail").onclick = () => {
-        closeModal();
-        reject(new Error("The payment was cancelled."));
-      };
+
+      try {
+        const rzp = new Razorpay(options);
+        rzp.on("payment.failed", function (resp) {
+          reject(new Error(resp.error && resp.error.description ? resp.error.description : "Payment failed."));
+        });
+        rzp.open();
+      } catch (e) {
+        reject(new Error("The secure payment window could not be opened. Please try again."));
+      }
     }).catch(err => {
       reject(err);
     });
@@ -3529,8 +3505,8 @@ function finalizeOrder(pay) {
     address: { ...a },
     note: (S.note || "").trim(),
     payment: pay,
-    status: "Order Confirmed",
-    history: [{ s: "Order Confirmed", t: Date.now() }],
+    status: pay && pay.method === "razorpay" ? "Payment Pending" : "Order Confirmed",
+    history: [{ s: pay && pay.method === "razorpay" ? "Payment Pending" : "Order Confirmed", t: Date.now() }],
     eta: etaFor(a.pin, items).getTime(),
     user_id: u ? u.id : null,
     email: u ? u.email : (a && a.email ? a.email : ""),
@@ -3573,33 +3549,61 @@ function finalizeOrder(pay) {
     user_id: u ? u.id : null,
     coupon_code: P.coupon && !P.coupon.err ? P.coupon.code : null,
     payment_method: pay && pay.method ? pay.method : "razorpay",
+    razorpay_order_id: pay && pay.razorpay_order_id ? pay.razorpay_order_id : null,
     note: (S.note || "").trim()
-  }).then(res => {
-    if (res && res.success && res.order) {
-      const dbOrder = res.order;
-      o.id = dbOrder.order_number;
-      o.order_number = dbOrder.order_number;
-      o.db_id = dbOrder.id;
-      o.customer_email = dbOrder.customer_email || (u && u.email) || "";
-      o.email = dbOrder.customer_email || (u && u.email) || "";
-      o.user_id = dbOrder.user_id || (u && u.id) || null;
-      o.fromUserOrders = true;
+  }).then(async res => {
+    if (!res || !res.success || !res.order) {
+      o.status = "Payment Verification Pending";
       DB.write("orders", S.orders);
-      if (pay.status === "Paid") {
-        API.post("/payment/razorpay/verify", {
-          order_number: dbOrder.order_number,
-          razorpay_payment_id: pay.razorpay_payment_id || pay.ref,
-          razorpay_order_id: pay.razorpay_order_id,
-          razorpay_signature: pay.razorpay_signature || ""
-        }).then(vRes => {
-          if (vRes && vRes.success) {
-            toast("Order placed & confirmation email sent!", "ok");
-          }
-        });
+      toast(
+        pay && pay.status === "Paid"
+          ? "Payment may have completed, but the order could not be saved. Contact support before trying to pay again."
+          : ((res && res.message) || "The order could not be saved. Please try again."),
+        "err",
+      );
+      go("order-placed/" + o.id);
+      return;
+    }
+
+    const dbOrder = res.order;
+    o.id = dbOrder.order_number;
+    o.order_number = dbOrder.order_number;
+    o.db_id = dbOrder.id;
+    o.customer_email = dbOrder.customer_email || (u && u.email) || "";
+    o.email = dbOrder.customer_email || (u && u.email) || "";
+    o.user_id = dbOrder.user_id || (u && u.id) || null;
+    o.status = dbOrder.status || o.status;
+    o.fromUserOrders = true;
+
+    if (pay && pay.status === "Paid") {
+      const vRes = await API.post("/payment/razorpay/verify", {
+        order_number: dbOrder.order_number,
+        razorpay_payment_id: pay.razorpay_payment_id,
+        razorpay_order_id: pay.razorpay_order_id,
+        razorpay_signature: pay.razorpay_signature
+      });
+
+      if (vRes && vRes.success) {
+        o.status = (vRes.order && vRes.order.status) || "Order Confirmed";
+        toast("Payment verified. Your order is confirmed.", "ok");
+      } else {
+        o.status = "Payment Verification Pending";
+        toast(
+          ((vRes && vRes.message) || "Payment verification is still pending.") +
+            " If money was debited, do not pay again; contact support.",
+          "err",
+        );
       }
     }
+
+    DB.write("orders", S.orders);
+    go("order-placed/" + o.id);
+  }).catch(() => {
+    o.status = "Payment Verification Pending";
+    DB.write("orders", S.orders);
+    toast("We couldn't confirm the order with the server. Contact support before trying to pay again.", "err");
+    go("order-placed/" + o.id);
   });
-  go("order-placed/" + o.id);
 }
 /* optional: forward each new order to the shop owner (Google Apps Script, Formspree, your own API…) */
 function notifyShop(o) {

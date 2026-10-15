@@ -28,7 +28,7 @@
     }
     window.APP_CONFIG = {
       csrfToken: '{{ csrf_token() }}',
-      razorpayKey: '{{ env('RAZORPAY_KEY', 'rzp_test_nHZf320qihdDBv') }}',
+      razorpayKey: '{{ config('services.razorpay.key', '') }}',
       appName: '{{ config('app.name', 'Lemurra Traders') }}',
       apiUrl: base + '/api',
       baseUrl: base || '/'

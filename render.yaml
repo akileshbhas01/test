@@ -23,4 +23,24 @@ services:
       - key: LOG_CHANNEL
         value: stderr
       - key: MAIL_MAILER
-        value: log
+        value: smtp
+      - key: MAIL_HOST
+        value: smtp.zoho.in
+      - key: MAIL_PORT
+        value: "465"
+      - key: MAIL_ENCRYPTION
+        value: ssl
+      - key: MAIL_USERNAME
+        value: admin@lemurra.in
+      - key: MAIL_FROM_ADDRESS
+        value: admin@lemurra.in
+      - key: MAIL_FROM_NAME
+        value: Lemurra Traders
+      - key: ORDER_NOTIFICATION_EMAIL
+        value: admin@lemurra.in
+      - key: MAIL_PASSWORD
+        sync: false
+      - key: RAZORPAY_KEY
+        sync: false
+      - key: RAZORPAY_SECRET
+        sync: false
