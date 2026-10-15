@@ -1,0 +1,680 @@
+{
+  "products": [
+    {
+      "id": "LTWF103",
+      "name": "Handcrafted Wooden Tribal Statue",
+      "cat": "Home Decor",
+      "price": 1899,
+      "mrp": 2599,
+      "img": "ballet",
+      "stock": 12,
+      "rating": 4.7,
+      "reviews": 24,
+      "blurb": "A tall hand-carved wooden figure with an expressive face and a natural finish. A statement piece for a shelf, a hallway corner or a farmhouse-style wall.",
+      "specs": {
+        "Material": "Hand-carved wood",
+        "Style": "Tribal, farmhouse",
+        "Finish": "Natural polish",
+        "Use": "Shelf, console or floor corner",
+        "Care": "Dust with a dry cloth"
+      }
+    },
+    {
+      "id": "LTHD008",
+      "name": "3D Deer Crystal Ball LED Lamp",
+      "cat": "Home Decor",
+      "price": 249,
+      "mrp": 380,
+      "img": "deer",
+      "stock": 48,
+      "rating": 4.6,
+      "reviews": 118,
+      "blurb": "A laser-etched deer suspended inside optical crystal. The wooden base warms up to a soft amber glow on a single tap.",
+      "specs": {
+        "Material": "K9 optical crystal, wood base",
+        "Diameter": "8 cm",
+        "Power": "USB / 3× AAA",
+        "Light": "Warm white, touch switch",
+        "Box": "Gift carton included"
+      }
+    },
+    {
+      "id": "LTWS102",
+      "name": "Wooden Ballet Dancer Sculpture",
+      "cat": "Home Decor",
+      "price": 1899,
+      "mrp": 2999,
+      "img": "moon",
+      "stock": 12,
+      "rating": 4.8,
+      "reviews": 41,
+      "blurb": "A hand-carved dancer mid-turn, finished in natural teak oil. Sits well on a console, a study desk or a gifting table.",
+      "specs": {
+        "Material": "Seasoned teak wood",
+        "Height": "28 cm",
+        "Finish": "Natural oil, hand-rubbed",
+        "Care": "Dust with a dry cloth",
+        "Origin": "Handmade in Tamil Nadu"
+      }
+    },
+    {
+      "id": "LTPS009",
+      "name": "Adjustable Foldable Mobile & Tablet Stand",
+      "cat": "Accessories",
+      "price": 380,
+      "mrp": 550,
+      "img": "stand",
+      "stock": 64,
+      "rating": 4.5,
+      "reviews": 203,
+      "blurb": "Folds to pocket size, opens to six viewing angles. Silicone pads keep the device still through a long call.",
+      "specs": {
+        "Material": "ABS with silicone grip",
+        "Fits": "4\" to 12.9\" devices",
+        "Angles": "6 positions",
+        "Folded": "11 × 7 × 2 cm",
+        "Weight": "92 g"
+      }
+    },
+    {
+      "id": "LTCP501",
+      "name": "Custom Desktop Calendar with Wooden Stand",
+      "cat": "Customize",
+      "price": 529,
+      "mrp": 760,
+      "img": "calendar",
+      "stock": 999,
+      "rating": 4.9,
+      "reviews": 156,
+      "blurb": "Twelve of your own photographs, printed on 300 gsm matte card and set in a solid wood stand. Upload your pictures and the text to print in your cart when you order.",
+      "specs": {
+        "Pages": "12 months + cover",
+        "Paper": "300 gsm matte art card",
+        "Size": "6 × 8 inches",
+        "Stand": "Solid wood, reusable",
+        "Turnaround": "4–6 working days"
+      }
+    },
+    {
+      "id": "LTCP502",
+      "name": "Custom Photo Calendar — Landscape",
+      "cat": "Customize",
+      "price": 599,
+      "mrp": 850,
+      "img": "calendar2",
+      "stock": 999,
+      "rating": 4.8,
+      "reviews": 64,
+      "blurb": "The landscape cut, for group photographs and wide shots. Same wooden stand, more room per month.",
+      "specs": {
+        "Pages": "12 months + cover",
+        "Paper": "300 gsm matte art card",
+        "Size": "8 × 6 inches",
+        "Stand": "Solid wood",
+        "Turnaround": "4–6 working days"
+      }
+    },
+    {
+      "id": "LTCP503",
+      "name": "Custom Calendar — Premium Gift Set",
+      "cat": "Customize",
+      "price": 749,
+      "mrp": 1100,
+      "img": "calendar3",
+      "stock": 999,
+      "rating": 4.9,
+      "reviews": 28,
+      "blurb": "Calendar, printed greeting card and a kraft gift sleeve. Built for corporate new-year gifting in small batches.",
+      "specs": {
+        "Includes": "Calendar + card + sleeve",
+        "Paper": "350 gsm textured",
+        "Size": "6 × 8 inches",
+        "Bulk": "10+ units priced lower",
+        "Turnaround": "6–8 working days"
+      }
+    },
+    {
+      "id": "LTCB122",
+      "name": "Premium Wooden Chopping Board",
+      "cat": "Home Utility",
+      "price": 489,
+      "mrp": 699,
+      "img": "chopping",
+      "stock": 27,
+      "rating": 4.6,
+      "reviews": 94,
+      "blurb": "Acacia end-grain with a juice groove and a deep finger hold. Goes from prep board to serving platter without a wash.",
+      "specs": {
+        "Material": "Acacia hardwood",
+        "Size": "38 × 25 × 1.8 cm",
+        "Feature": "Juice groove, hanging hole",
+        "Care": "Hand wash, oil monthly",
+        "Safe": "Food-grade finish"
+      }
+    },
+    {
+      "id": "LTKT201",
+      "name": "Electric Duck Climbing Stairs Toy",
+      "cat": "Kids",
+      "price": 599,
+      "mrp": 899,
+      "img": "duck",
+      "stock": 19,
+      "rating": 4.4,
+      "reviews": 72,
+      "blurb": "Waddles up its own staircase, quacks at the top and starts again. Holds a three-year-old's attention longer than most screens.",
+      "specs": {
+        "Ages": "3 years and up",
+        "Power": "2× AA (not included)",
+        "Includes": "Duck, staircase, slide",
+        "Material": "BIS-tested ABS",
+        "Sound": "Quack + light"
+      }
+    },
+    {
+      "id": "LTTH020",
+      "name": "Diecast Jeep Model 1:32 Scale",
+      "cat": "Kids",
+      "price": 419,
+      "mrp": 620,
+      "img": "jeep",
+      "stock": 33,
+      "rating": 4.5,
+      "reviews": 61,
+      "blurb": "Pull-back diecast with opening doors and bonnet, working suspension and rubber tyres. Heavier than it looks.",
+      "specs": {
+        "Scale": "1:32",
+        "Material": "Zinc alloy and ABS",
+        "Length": "14 cm",
+        "Features": "Pull-back, opening doors, light and sound",
+        "Ages": "3 years and up"
+      }
+    },
+    {
+      "id": "LTTH010",
+      "name": "Die-Cast THAR Police SUV Model",
+      "cat": "Kids",
+      "price": 449,
+      "mrp": 650,
+      "img": "thar",
+      "stock": 22,
+      "rating": 4.6,
+      "reviews": 55,
+      "blurb": "Police livery Thar with siren lights and a pull-back motor. A favourite on the shelf and on the floor.",
+      "specs": {
+        "Scale": "1:32",
+        "Material": "Zinc alloy and ABS",
+        "Length": "14 cm",
+        "Features": "Light, sound, pull-back",
+        "Ages": "3 years and up"
+      }
+    },
+    {
+      "id": "LTSB015",
+      "name": "Car Shaped School and Travel Bag",
+      "cat": "Kids",
+      "price": 899,
+      "mrp": 1350,
+      "img": "carbag",
+      "stock": 15,
+      "rating": 4.7,
+      "reviews": 39,
+      "blurb": "A soft moulded car body over a real two-compartment bag. Padded straps, and it stands up on its own wheels.",
+      "specs": {
+        "Capacity": "14 litres",
+        "Material": "Padded polyester",
+        "Fits": "Nursery to class 2",
+        "Straps": "Adjustable, padded",
+        "Wash": "Spot clean"
+      }
+    },
+    {
+      "id": "LTJSB017",
+      "name": "Handmade Jute Sling Bag",
+      "cat": "Accessories",
+      "price": 649,
+      "mrp": 950,
+      "img": "jute",
+      "stock": 24,
+      "rating": 4.8,
+      "reviews": 47,
+      "blurb": "Woven from natural jute with a cotton lining and a brass clasp. Light, roomy, and it only looks better with use.",
+      "specs": {
+        "Material": "Natural jute, cotton lining",
+        "Size": "30 × 26 cm",
+        "Strap": "Adjustable, 120 cm",
+        "Closure": "Brass magnetic clasp",
+        "Made": "Handwoven"
+      }
+    },
+    {
+      "id": "LTCB016",
+      "name": "Black Everyday Sling Bag",
+      "cat": "Accessories",
+      "price": 549,
+      "mrp": 799,
+      "img": "sling",
+      "stock": 31,
+      "rating": 4.4,
+      "reviews": 88,
+      "blurb": "Water-resistant crossbody with a hidden back pocket. Fits a 10-inch tablet, a bottle and the usual pocket clutter.",
+      "specs": {
+        "Material": "Water-resistant nylon",
+        "Size": "28 × 20 × 8 cm",
+        "Pockets": "3 outer, 1 hidden",
+        "Strap": "Adjustable",
+        "Colour": "Black"
+      }
+    },
+    {
+      "id": "LTWB008",
+      "name": "Insulated Kids Water Bottle",
+      "cat": "Kids",
+      "price": 399,
+      "mrp": 580,
+      "img": "bottle",
+      "stock": 42,
+      "rating": 4.5,
+      "reviews": 130,
+      "blurb": "Double-walled steel that keeps water cold through a school day. Flip lid, silicone sleeve, no metallic aftertaste.",
+      "specs": {
+        "Capacity": "600 ml",
+        "Material": "304 stainless steel",
+        "Keeps": "Cold 18 h / hot 10 h",
+        "Lid": "Flip-top with lock",
+        "Leakproof": "Yes"
+      }
+    },
+    {
+      "id": "LTHD006",
+      "name": "3D Ganesha Crystal Ball LED Lamp",
+      "cat": "Home Decor",
+      "price": 279,
+      "mrp": 420,
+      "img": "puzzle",
+      "stock": 36,
+      "rating": 4.7,
+      "reviews": 87,
+      "blurb": "A spiritual decorative lamp: Ganesha etched inside optical crystal and lit from beneath by a warm LED on a wooden base. A popular gift for housewarmings and festivals.",
+      "specs": {
+        "Material": "K9 optical crystal, wood base",
+        "Diameter": "8 cm",
+        "Power": "USB powered",
+        "Light": "Warm white LED",
+        "Box": "Gift carton included"
+      }
+    }
+  ],
+  "blogs": [
+    {
+      "slug": "how-to-plan-a-photo-calendar",
+      "title": "How to plan a photo calendar people keep on their desk",
+      "cat": "Gift guides",
+      "date": "2026-09-18",
+      "read": 5,
+      "cover": "calendar3",
+      "intro": "A personalised calendar is the gift that gets looked at every single morning. Here is how to pick twelve photographs that earn their month.",
+      "shop": [
+        "LTCP501",
+        "LTCP502",
+        "LTCP503"
+      ],
+      "body": [
+        [
+          "h",
+          "Start with the twelve, not the cover"
+        ],
+        [
+          "p",
+          "Most people pick a cover photograph first and then scramble for eleven more. Do it the other way round. Scroll through your phone, pull out thirty photographs you like, and cut down to twelve. The cover will be obvious once you can see the whole set."
+        ],
+        [
+          "h",
+          "Match the photo to the month"
+        ],
+        [
+          "p",
+          "A monsoon walk suits a June or July page. A festival-lights picture belongs in October or November. You do not have to be strict, but a photograph that fits its month feels planned rather than random."
+        ],
+        [
+          "h",
+          "Portrait or landscape?"
+        ],
+        [
+          "ul",
+          [
+            "Portrait suits single people, couples and children.",
+            "Landscape suits group photographs, family trips and wide scenery.",
+            "Mixed sets work, but every landscape photograph will be cropped in a portrait calendar, so check the faces."
+          ]
+        ],
+        [
+          "h",
+          "Send the sharpest files you have"
+        ],
+        [
+          "p",
+          "A photograph that looks fine on a phone screen can turn soft on a printed page. Send the original file from your gallery, not a copy that came through a chat app, which shrinks the picture. Bright, evenly lit photographs print best."
+        ],
+        [
+          "h",
+          "Keep the text short"
+        ],
+        [
+          "p",
+          "A name, an occasion or a short line under the cover is enough. The month pages are for the photographs. If you are ordering for an office, keep the wording simple so it suits everyone who receives one."
+        ],
+        [
+          "p",
+          "When you order, the cart asks for your photographs, the text to print and the month to start from, and we send a layout proof before printing."
+        ]
+      ]
+    },
+    {
+      "slug": "crystal-lamps-housewarming-gift",
+      "title": "Why a crystal LED lamp is the easiest housewarming gift",
+      "cat": "Gift guides",
+      "date": "2026-09-04",
+      "read": 4,
+      "cover": "deer",
+      "intro": "It is small, it comes in a gift carton, it suits every room and it does not need a manual. That is most of what a housewarming gift has to do.",
+      "shop": [
+        "LTHD008",
+        "LTHD006"
+      ],
+      "body": [
+        [
+          "h",
+          "It fits any home"
+        ],
+        [
+          "p",
+          "New homes are full of boxes and half-decided corners. A small lamp with a warm glow goes on a bedside table, a study desk or a prayer shelf without needing space to be made for it."
+        ],
+        [
+          "h",
+          "How it works"
+        ],
+        [
+          "p",
+          "A design is laser-etched inside a block of optical crystal. The wooden base holds an LED that shines up through the crystal, so the figure seems to float in light. Power comes from a USB cable or batteries, depending on the model."
+        ],
+        [
+          "h",
+          "Choosing between the two"
+        ],
+        [
+          "ul",
+          [
+            "The deer is calm and modern. It suits bedrooms and living rooms.",
+            "Ganesha is a traditional choice for housewarmings, new offices and festivals."
+          ]
+        ],
+        [
+          "h",
+          "Looking after it"
+        ],
+        [
+          "p",
+          "Wipe the crystal with a soft dry cloth. Keep it away from water and from direct afternoon sun, which can warm the base. The gift carton doubles as storage."
+        ]
+      ]
+    },
+    {
+      "slug": "styling-a-wooden-sculpture",
+      "title": "Styling a hand-carved wooden sculpture at home",
+      "cat": "Home decor",
+      "date": "2026-08-21",
+      "read": 5,
+      "cover": "ballet",
+      "intro": "A single carved figure can anchor a whole shelf. The trick is to give it room, a plain backdrop and one companion at most.",
+      "shop": [
+        "LTWS102",
+        "LTWF103"
+      ],
+      "body": [
+        [
+          "h",
+          "Give it space"
+        ],
+        [
+          "p",
+          "Carved wood has lines and shadows that need air around them. Leave a hand's width on each side. A crowded shelf makes even a fine sculpture look like clutter."
+        ],
+        [
+          "h",
+          "Choose a plain background"
+        ],
+        [
+          "p",
+          "A painted wall, a plain curtain or a bare shelf lets the grain do the talking. Busy wallpaper competes with it."
+        ],
+        [
+          "h",
+          "Pair it with one thing"
+        ],
+        [
+          "ul",
+          [
+            "A small plant in a clay pot.",
+            "A brass or ceramic bowl.",
+            "A crystal lamp, so the sculpture is lit in the evening."
+          ]
+        ],
+        [
+          "h",
+          "Where it looks best"
+        ],
+        [
+          "p",
+          "Console tables in a hallway, the top of a bookshelf, or a low table in the living room. A taller figure suits a floor corner beside a sofa."
+        ],
+        [
+          "h",
+          "Care"
+        ],
+        [
+          "p",
+          "Dust it with a dry cloth. Avoid water and harsh cleaners. Once or twice a year, rub in a few drops of natural oil to keep the wood from drying out."
+        ]
+      ]
+    },
+    {
+      "slug": "toys-that-last-past-the-first-week",
+      "title": "Choosing toys that last longer than the first week",
+      "cat": "Kids",
+      "date": "2026-08-07",
+      "read": 4,
+      "cover": "duck",
+      "intro": "Some toys are loved for an afternoon and forgotten. Others stay in the toy box for years. There are a few things to look for.",
+      "shop": [
+        "LTKT201",
+        "LTTH020",
+        "LTTH010"
+      ],
+      "body": [
+        [
+          "h",
+          "Check the age label first"
+        ],
+        [
+          "p",
+          "The age on the box is about safety as well as fun. Small parts are a risk for children under three. Buy for the age of the child, not the age you hope they will act."
+        ],
+        [
+          "h",
+          "Look for something they can do, not just watch"
+        ],
+        [
+          "p",
+          "A toy that moves once and stops is finished in minutes. A pull-back car can be raced again and again. A toy that climbs its own stairs invites the child to set it up over and over."
+        ],
+        [
+          "h",
+          "Weight is a good sign"
+        ],
+        [
+          "p",
+          "Diecast metal cars feel heavier than plastic ones, and they take knocks better. Opening doors and rubber tyres give children more to explore."
+        ],
+        [
+          "ul",
+          [
+            "Round edges, no loose small parts for young children.",
+            "Batteries that are easy for an adult to change.",
+            "Material that is tested and safe for children."
+          ]
+        ],
+        [
+          "h",
+          "Rotate, do not pile up"
+        ],
+        [
+          "p",
+          "Keep a few toys out and put the rest away. Swap them every couple of weeks. Old toys feel new again."
+        ]
+      ]
+    },
+    {
+      "slug": "care-for-wooden-kitchen-boards",
+      "title": "How to look after a wooden chopping board for years",
+      "cat": "Care & tips",
+      "date": "2026-07-24",
+      "read": 3,
+      "cover": "chopping",
+      "intro": "A good board can outlast most things in your kitchen. It only asks for five minutes of care a month.",
+      "shop": [
+        "LTCB122"
+      ],
+      "body": [
+        [
+          "h",
+          "Wash by hand, quickly"
+        ],
+        [
+          "p",
+          "Use warm water, a little mild soap and a brush. Do not soak the board and never put it in a dishwasher, because heat and water make wood warp and crack."
+        ],
+        [
+          "h",
+          "Dry it on its edge"
+        ],
+        [
+          "p",
+          "Stand the board upright so air reaches both faces. Drying it flat traps damp on one side and can bend it."
+        ],
+        [
+          "h",
+          "Oil it once a month"
+        ],
+        [
+          "p",
+          "When the board starts to look pale or dry, wipe on a thin layer of food-safe oil, leave it for a few hours, then wipe off the extra. Coconut or mineral oil both work."
+        ],
+        [
+          "h",
+          "Freshen and de-stain"
+        ],
+        [
+          "ul",
+          [
+            "Rub half a lemon with coarse salt to lift smells and stains.",
+            "Rinse and dry well afterwards, then oil.",
+            "Use one side for onions and garlic if you like."
+          ]
+        ]
+      ]
+    },
+    {
+      "slug": "carrying-less-jute-and-sling-bags",
+      "title": "Carry less: choosing a sling bag for everyday",
+      "cat": "Care & tips",
+      "date": "2026-07-10",
+      "read": 4,
+      "cover": "jute",
+      "intro": "A sling bag should hold what you need and nothing else. Here is how to pick between natural jute and everyday nylon.",
+      "shop": [
+        "LTJSB017",
+        "LTCB016"
+      ],
+      "body": [
+        [
+          "h",
+          "Decide what goes in first"
+        ],
+        [
+          "p",
+          "Phone, wallet, keys, a bottle and maybe a tablet. If that is your day, you need a small bag, not a big one. A smaller bag stops you carrying things you never use."
+        ],
+        [
+          "h",
+          "Jute"
+        ],
+        [
+          "p",
+          "Natural jute is light and airy, and it looks better as it softens with use. Keep it dry. If it gets damp, let it dry in the shade, and spot clean with a soft cloth."
+        ],
+        [
+          "h",
+          "Water-resistant nylon"
+        ],
+        [
+          "p",
+          "Nylon is the better choice for commuting or the rainy season. A hidden back pocket keeps a phone or cards safe in crowds."
+        ],
+        [
+          "ul",
+          [
+            "Adjustable strap so you can wear it across the chest or on the hip.",
+            "A zip or clasp that closes firmly.",
+            "Padding on the strap if you carry a tablet."
+          ]
+        ]
+      ]
+    },
+    {
+      "slug": "a-day-at-lemurra-traders",
+      "title": "From Avadi to your door: how an order leaves our shop",
+      "cat": "Behind the scenes",
+      "date": "2026-06-26",
+      "read": 4,
+      "cover": "brandfull",
+      "intro": "We are a small trading house in Avadi, Tamil Nadu. Here is what happens between you pressing Place order and the parcel reaching you.",
+      "shop": [],
+      "body": [
+        [
+          "h",
+          "We check every order by hand"
+        ],
+        [
+          "p",
+          "When an order arrives, someone reads it, confirms the stock and checks the delivery address and pin code. If anything looks wrong, we call before we pack."
+        ],
+        [
+          "h",
+          "Stocked items leave within a day"
+        ],
+        [
+          "p",
+          "Toys, bags, lamps and boards are packed in a box with padding, and handed to the courier. Fragile items such as crystal get extra care."
+        ],
+        [
+          "h",
+          "Personalised orders take a little longer"
+        ],
+        [
+          "p",
+          "Calendars are made to order. We lay out your photographs, send a proof, print after you approve, and then ship. That is why they take four to six working days."
+        ],
+        [
+          "h",
+          "Tracking"
+        ],
+        [
+          "p",
+          "Open Account, then Orders, to follow your parcel from Order Confirmed through Packed, Shipped and Out for Delivery. If you need us, WhatsApp support answers between 9:30 am and 5:30 pm, Monday to Saturday."
+        ]
+      ]
+    }
+  ]
+}
